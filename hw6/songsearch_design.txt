@@ -1,0 +1,83 @@
+-----------------------=
+-- SONG SEARCH DESIGN --
+--    23 NOV 2014     --
+--     jcusic01       --
+-----------------------=
+
+
+----------=
+-- BUILD --
+----------=
+
+1. class Song:
+	str artist
+	str title
+	vector <str> orig_lyrics
+
+2. class LyricInfo
+	int lyric_count
+	int song_index
+
+3. class Hash
+	vector <str> alpha_lyrics
+	void resort()
+		[insertion sort]
+	private:
+		int load_factor
+		vector <LyricInfo> top_ten[10]
+		void expand ()
+
+4. vector <Song> all_songs
+
+
+---------=
+-- READ --
+---------=
+
+- Songs will be read in one at a time from the database
+
+- For each song:
+	- A new Song object is created and populated with 'artist' and 'title'
+	- Insert that Song object into the vector all_songs
+	
+	- For each lyric in the song:
+		- Insert the word into vector orig_lyrics (including all caps/punctuation)
+		- Hash
+			- convert to all lowercase/no puncutation using alphaOnly()
+			- create hash code from the given hash function
+			- insert at location x
+				- if x.top_ten is empty
+					insert LyricInfo at top_ten[0]
+				- elif the current song already has a location in the top_ten
+					update lyric_count
+					resort()
+				- else 
+					store LyricInfo in the 11th position (used as a staging area)
+					resort()
+			- resolve any collisions at location x with a second hash function
+			- if load_factor is above 0.5, resort
+
+
+** Brief Written Description behind Hash Table **
+Each location in the hash table will have a vector with 11 spaces.  As lyrics get hashed, they will be sorted one at a time using insertion sort for it's speed in small arrays.
+
+The 11th space in each location's vector will always be a 'junk' space, used for placing the lyric of the current song while it is still being read in.  The vector is resorted after every word is entered, meaning it will always be at worst nearly-sorted which ensures fast sort times.
+
+-----------=
+-- SEARCH --
+-----------=
+
+- Input guesses will be stripped of punctuation using the alphaOnly() function
+
+- Result will be hashed to find top ten songs containing that lyric
+
+- For each song in the top_ten list
+	- For every word (until LyricInfo's lyric_count is hit)
+		- convert using alphaOnly()
+		- compare to guess
+		- if the current word matches guess
+			- print out with the preceeding and following five words
+
+
+* Discussed with Prof. Gregg November 21.
+
